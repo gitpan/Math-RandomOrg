@@ -1,0 +1,9 @@
+Revision history for Perl extension Math/RandomOrg.pm:
+
+0.02	Wed Jan 9  06:50:00 EST 2002
+	- fixed POD syntax error
+	- cleaned up for CPAN release
+
+0.01	Tue Oct 16 16:34:00 EST 2001
+	- original version 
+
