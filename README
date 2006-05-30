@@ -32,12 +32,12 @@ INSTALLING
 
 AUTHOR
 
-    Gregory Williams <greg@evilfunhouse.com>
+    Gregory Todd Williams <gwilliams@cpan.org>
 
 
 COPYRIGHT
 
-	 Copyright (c) 2002, Gregory Williams. All rights reserved.
+	 Copyright (c) 2001--2006, Gregory Williams. All rights reserved.
 	 This module is free software. It may be used, redistributed
 	 and/or modified under the same terms as Perl itself.
 

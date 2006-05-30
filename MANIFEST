@@ -1,8 +1,9 @@
 Changes
+lib/Math/RandomOrg.pm
+Makefile.PL
 MANIFEST
 MANIFEST.SKIP
-Makefile.PL
 README
-lib/Math/RandomOrg.pm
 t/randbyte.t
 t/randnum.t
+META.yml                                 Module meta-data (added by MakeMaker)

@@ -49,9 +49,9 @@ require Exporter;
 
 @ISA = qw(Exporter);
 
-@EXPORT_OK = qw( randnum randbyte );
+@EXPORT_OK = qw( checkbuf randnum randbyte randseq );
 @EXPORT = qw();
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 use Carp;
 use Math::BigInt;
@@ -59,8 +59,7 @@ use LWP::Simple ();
 
 my $RAND_MIN	= new Math::BigInt "-1000000000";	# random.org fixed min
 my $RAND_MAX	= new Math::BigInt "1000000000";	# random.org fixed max
-my $BYTE_LEN	= 256;					# at least, request this number of random bytes in each request to random.org
-my $NUM_BUF	= 256;					# at least, request this number of random integers in each request to random.org
+my $NUM_BUF	= 256;									# at least, request this number of random integers in each request to random.org
 
 =head1 FUNCTIONS
 
@@ -70,6 +69,30 @@ my $NUM_BUF	= 256;					# at least, request this number of random integers in eac
 
 {
 	my @randnums;
+
+=item C<checkbuf()>
+
+This routine takes no parameters and simply returns a single value (e.g., 
+C<28%>) telling you how full the buffer is. At 100%, the buffer is full 
+and you are free to hit it with automated clients. At 0%, the buffer is 
+empty and requests will hang. When less than 100%, the buffer is being 
+filled continually, but doing so takes time. I advise people with 
+automated clients to check the buffer level every once in a while and only 
+issue requests when the buffer level is 20% or higher.
+
+=cut
+
+	sub checkbuf {
+		my $url		= "http://www.random.org/cgi-bin/checkbuf";
+		my $data	= LWP::Simple::get( $url );
+		if (defined($data)) {
+			$data =~ s/\%//;
+			return $data;
+		} else {
+			carp "HTTP GET failed for $url";
+			return;
+		}
+	}
 
 =item C<randnum ( $min, $max )>
 
@@ -88,7 +111,6 @@ Therefore, $min and $max may not exceed the default values.
 			carp "The $min and $max arguments to the randnum() function may not exceed the bounds ($RAND_MIN, $RAND_MAX)!";
 			return undef;
 		}
-		
 		if ($#randnums == -1) {
 			my $url		= "http://www.random.org/cgi-bin/randnum?num=${NUM_BUF}&min=${RAND_MIN}&max=${RAND_MAX}&col=1";
 			my $data	= LWP::Simple::get( $url );
@@ -141,6 +163,38 @@ you may wish to try the Math::TrulyRandom module.
 	}
 }
 
+=item C<randseq ( $min, $max )>
+
+The randseq script returns a randomized sequence of numbers. This corresponds to dropping a number of lottery tickets into a hat and drawing them out in random order. Hence, each number in a randomized sequence occurs exactly once.
+
+Example: C<randseq(1, 10)> will return the numbers between 1 and 10 (both inclusive) in a random order.
+
+=cut
+
+	sub randseq (;$$) {
+		my ($min, $max) = @_;
+		return if ( (! defined $min) || (! defined $max) || ($min !~ /^\-?\d+$/) || ($max !~ /^\-?\d+$/) );
+		if ($max < $min) {
+			carp "MAX must be greater than MIN.";
+			return;
+		}
+		if ($max - $min > 10000) {
+			carp "random.org restricts the size of sequences to <= 10,000.";
+			return;
+		}
+		my @sequence = ();
+		my $url		= "http://www.random.org/cgi-bin/randseq?min=$min&max=$max";
+		my $data	= LWP::Simple::get( $url );
+		if (defined($data)) {
+			@sequence = map { new Math::BigInt $_ } (split(/\n/, $data));
+		} else {
+			carp "HTTP GET failed for $url";
+			return undef;
+		}
+		
+		return wantarray ? @sequence : \@sequence;
+	}
+
 1;
 __END__
 
@@ -152,7 +206,7 @@ None known.
 
 =head1 AUTHOR
 
-Gregory Williams <greg@evilfunhouse.com>
+Gregory Williams <gwilliams@cpan.org>
 
 =head1 SEE ALSO
 
@@ -166,7 +220,7 @@ Gregory Williams <greg@evilfunhouse.com>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2002, Gregory Williams. All rights reserved.
+Copyright (c) 2001--2006, Gregory Williams. All rights reserved.
 This module is free software. It may be used, redistributed
 and/or modified under the same terms as Perl itself.
 
