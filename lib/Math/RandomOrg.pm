@@ -10,7 +10,8 @@ Math::RandomOrg - Retrieve random numbers and data from random.org.
 
 =head1 DESCRIPTION
 
-Math::RandomOrg provides functions for retrieving random data from the random.org server. Data may be retrieved in an integer or byte-stream format using the C<randnum> and C<randbyte> functions respectively.
+Math::RandomOrg provides functions for retrieving random data from the random.org server.
+Data may be retrieved in an integer or byte-stream format using the C<randnum> and C<randbyte> functions respectively.
 
 =head1 REQUIRES
 
@@ -43,15 +44,16 @@ None by default. You may request the following symbols be exported:
 package Math::RandomOrg;
 
 use strict;
-use vars qw(@ISA @EXPORT_OK @EXPORT $VERSION);
+use warnings;
+
+our ($VERSION, @ISA, @EXPORT, @EXPORT_OK);
 
 require Exporter;
-
 @ISA = qw(Exporter);
 
 @EXPORT_OK = qw( checkbuf randnum randbyte randseq );
 @EXPORT = qw();
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 use Carp;
 use Math::BigInt;
@@ -204,10 +206,6 @@ __END__
 
 None known.
 
-=head1 AUTHOR
-
-Gregory Williams <gwilliams@cpan.org>
-
 =head1 SEE ALSO
 
 =over 4
@@ -220,9 +218,12 @@ Gregory Williams <gwilliams@cpan.org>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2001--2006, Gregory Williams. All rights reserved.
-This module is free software. It may be used, redistributed
-and/or modified under the same terms as Perl itself.
+Copyright (c) 2001-2006 Gregory Todd Williams. All rights reserved. This
+program is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
+
+=head1 AUTHOR
+
+Gregory Todd Williams  C<< <gwilliams@cpan.org> >>
 
 =cut
-
